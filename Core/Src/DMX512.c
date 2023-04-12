@@ -315,19 +315,6 @@ void DMX_Demo()
 {  
     uint16_t num=(DMX_model*DMX_Chn);
     uint16_t m=1,i,t,j;
-
-//    DMX_Send_Packet(num);
-    /* dmxData << m */
-//    for (i = num - 1;i>m-1; i--)
-//    {
-//        t = dmxData[num-1];
-//        for (j = num-1;j>0; j--)
-//        {
-//            dmxData[j] = dmxData[j-1];
-//        }
-//        dmxData[0] = t;
-//    }
-      /* dmxData >> m */
     for (i = 0;i<m; i++)
     {
         t = dmxData[num-1];

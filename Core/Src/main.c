@@ -104,12 +104,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-//	  DMX_Demo();
 	  DMX_Send_Packet(512, dmxDataDemo);
-	  DMX_Delay_us(1000);
-	  dmxDataDemo[1]= 255;
-	  DMX_Send_Packet(512, dmxDataDemo);
-	  	  DMX_Delay_us(1000);
 	  HAL_GPIO_TogglePin(LED1_Port, LED1_Pin);
 	  HAL_Delay(1000);
     /* USER CODE BEGIN 3 */
