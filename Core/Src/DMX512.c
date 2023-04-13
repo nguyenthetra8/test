@@ -172,8 +172,8 @@ void DMX_Send_ADD_Data(uint16_t tempdata)
     uint8_t data_H,data_L,i,tempadd[9];
 	data_H=(tempdata>>6)&63;     //Get High 8bit
 	data_L=tempdata&63;		    //Get Low 8bit
-	data_H=(data_H)|0x80;	    //set high 2bit =10
-	data_L=(data_L)|0x40;	    //set high 2bit =01
+//	data_H=(data_H)|0x80;	    //set high 2bit =10
+//	data_L=(data_L)|0x40;	    //set high 2bit =01
     
 	tempadd[0]=DMX_Transposition(0xc3);
     tempadd[1]=DMX_Transposition(0xf5);
@@ -184,12 +184,6 @@ void DMX_Send_ADD_Data(uint16_t tempdata)
     tempadd[6]=DMX_Transposition(0xf5);
     tempadd[7]=DMX_Transposition(0x5f);
     tempadd[8]=DMX_Transposition(0x00);
-    
-//	tempadd[0]=DMX_Transposition(0xAC);
-//    tempadd[1]=DMX_Transposition(common);
-//    tempadd[2]=DMX_Transposition(data_H);
-//    tempadd[3]=DMX_Transposition(data_L);
-//    for(i = 0; i < 4; ++i)
     for(i = 0; i < 9; ++i)
     {
 #ifdef UCS512C

@@ -99,6 +99,8 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 //  DMX_Demo_Init();
   dmxDataDemo[0]= 255;
+  dmxDataDemo[1]= 0;
+  dmxDataDemo[2]= 255;
 
 //  DMX_Write_Add(1);
   while (1)

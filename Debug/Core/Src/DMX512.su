@@ -8,10 +8,10 @@
 ../Core/Src/DMX512.c:132:6:DMX_Init	8	static
 ../Core/Src/DMX512.c:145:6:DMX_Write_Add	24	static
 ../Core/Src/DMX512.c:168:6:DMX_Send_ADD_Data	32	static
-../Core/Src/DMX512.c:205:6:DMX_Write_CMD	24	static
-../Core/Src/DMX512.c:220:6:DMX_Send_CMD_Data	32	static
-../Core/Src/DMX512.c:251:6:DMX_Reset	8	static
-../Core/Src/DMX512.c:264:6:DMX_W	8	static
-../Core/Src/DMX512.c:272:9:DMX_Transposition	24	static
-../Core/Src/DMX512.c:284:6:DMX_Demo_Init	8	static
-../Core/Src/DMX512.c:314:6:DMX_Demo	24	static
+../Core/Src/DMX512.c:199:6:DMX_Write_CMD	24	static
+../Core/Src/DMX512.c:214:6:DMX_Send_CMD_Data	32	static
+../Core/Src/DMX512.c:245:6:DMX_Reset	8	static
+../Core/Src/DMX512.c:258:6:DMX_W	8	static
+../Core/Src/DMX512.c:266:9:DMX_Transposition	24	static
+../Core/Src/DMX512.c:278:6:DMX_Demo_Init	8	static
+../Core/Src/DMX512.c:308:6:DMX_Demo	24	static
