@@ -95,10 +95,12 @@ void DMX_Delay_us(uint32_t nus)
 void DMX_Break()
 {
     GPIO_Tx_Config_OUT();     //Set UART TX pin mode to OUTPUT
+    DMX_TX_High;			  //DMX512 Mark before break MBB >88us
+    DMX_Delay_us(150);
     DMX_TX_Low;
-    DMX_Delay_us(150);        //DMX512 1990's BREAK >88us
+    DMX_Delay_us(150);        //DMX512 BREAK >88us
     DMX_TX_High;
-    DMX_Delay_us(15);         //DMX512 1990's Mark after break MAB >8us
+    DMX_Delay_us(15);         //DMX512 Mark after break MAB >8us
     GPIO_Tx_Config_AF();
     /* Send Start Code 00 */
     DMX_Send_9Data(0x00);
@@ -106,11 +108,10 @@ void DMX_Break()
 /* Send 9bit data and 9bit always set */
 void DMX_Send_9Data(uint8_t tempdata)
 {
-//	DMX_UART_INIT_SEND_DATA;
     if(DMX_UART->SR & (1<<6))
-    { 
+    {
         DMX_UART->DR = 0x0100 | tempdata;
-    } 
+    }
     while((DMX_UART->SR&0X40)==0);//waiting for Send data over
 }
 /* Send packet data,tempnum must <512 */
