@@ -7,17 +7,17 @@
 //-----------------------------------------------------------------------------
 // Global Variables
 //-----------------------------------------------------------------------------
-uint16_t DMX_model; //IC number
-uint8_t DMX_Chn;    //channel number 
+//uint16_t DMX_model; //IC number
+//uint8_t DMX_Chn;    //channel number
 
 //static uint16_t DMX_model;
 //static uint8_t DMX_Chn;
-static unsigned char dmxData[513];// Data pool
+//static unsigned char dmxData[513];// Data pool
 //static uint8_t fac_us = 0;					// DMX_Delay_us used
 __root const char MenuStr[]={"Version :"__DATE__ __TIME__ __FILE__};
 
 /* Clear DMX Buffer */
-void clrDmxData()
+void clrDmxData(uint8_t* dmxData)
 {
 	int i;
 	for(i=1;i<513;i++)
@@ -103,10 +103,10 @@ void DMX_Break()
     DMX_Delay_us(15);         //DMX512 Mark after break MAB >8us
     GPIO_Tx_Config_AF();
     /* Send Start Code 00 */
-    DMX_Send_9Data(0x00);
+    DMX_Send_8Data(0x00);
 }
-/* Send 9bit data and 9bit always set */
-void DMX_Send_9Data(uint8_t tempdata)
+/* Send 8bit data and 8bit always set */
+void DMX_Send_8Data(uint8_t tempdata)
 {
     if(DMX_UART->SR & (1<<6))
     {
@@ -124,58 +124,60 @@ void DMX_Send_Packet(uint16_t tempnum, unsigned char* dmxData1 )
         tempnum=512;
     while(i < tempnum)  //1-512
     {
-        DMX_Send_9Data(dmxData1[i]);
+        DMX_Send_8Data(dmxData1[i]);
         i++; 
     }
-//    HAL_Delay(20);      //Mark time after Slot
 }
 /* Init DMX parameter */
-void DMX_Init()
-{
-/* Init HardWare Info */
-    DMX_model=DMX_MODEL_NUM;
-    DMX_Chn=DMX_MODEL_CHN;
-    if((DMX_model*DMX_Chn)>512) //data must <512
-       printf("ERROR Data too long !!\r\n");
-/* Init by HAL_Init() */
-//    DMX_GPIO_Init();    //init RS485_DIR_Pin
-//    DMX_UART_Init();    //init UART port and Pins
-    clrDmxData();       //Clear Data
-}
+//void DMX_Init()
+//{
+///* Init HardWare Info */
+//    if((DMX_model*DMX_Chn)>512) //data must <512
+//       printf("ERROR Data too long !!\r\n");
+///* Init by HAL_Init() */
+//    clrDmxData();       //Clear Data
+//}
 /* Write Address For IC,tempadd is First IC add */
-void DMX_Write_Add(uint16_t tempadd)
-{
-	DMX_model = 3;
-    uint8_t i;
-    uint16_t address;
-    address=tempadd;
-//    if(tempadd == 0)    //DMX IC start at 1
-//        address=1;
-    DMX_Reset();        //Send 2S Reset sign
-    for(i = 0; i < DMX_model; ++i)
-    {
-         DMX_Send_ADD_Data(address);
-         address+=DMX_Chn;
-    }
-    address=tempadd;
-    DMX_Reset();
-    for(i = 0; i < DMX_model; ++i)
-    {
-         DMX_Send_ADD_Data(address);
-         address+=DMX_Chn;
-    }
-}
-/* Send change IC Address Order */
-void DMX_Send_ADD_Data(uint16_t tempdata)
+//void DMX_Write_Add(uint16_t tempadd)
+////{
+////	DMX_model = 3;
+////    uint8_t i;
+////    uint16_t address;
+////    address=tempadd;
+//////    if(tempadd == 0)    //DMX IC start at 1
+//////        address=1;
+////    DMX_Reset();        //Send 2S Reset sign
+////    for(i = 0; i < DMX_model; ++i)
+////    {
+////         DMX_Send_ADD_Data(address);
+////         address+=DMX_Chn;
+////    }
+////    address=tempadd;
+////    DMX_Reset();
+////    for(i = 0; i < DMX_model; ++i)
+////    {
+////         DMX_Send_ADD_Data(address);
+////         address+=DMX_Chn;
+////    }
+////}
+void DMX_Send_Add(unsigned char add )
 {
 	DMX_UART_INIT_SEND_ADD;
-//    uint8_t data_H,data_L,i,tempadd[4];
-    uint8_t data_H,data_L,i,tempadd[9];
+	uint8_t*  dmxData = DMX_ADD_Data(add);
+    uint16_t i=0;
+    DMX_Break();        //Break and Start Code
+    for( i = 0 ; i < 513 ; i++ )  //1-512
+    {
+        DMX_Send_8Data(dmxData[i]);
+        i++;
+    }
+}
+/*Change IC Address Order */
+uint8_t* DMX_ADD_Data(uint16_t tempdata)
+{
+    uint8_t data_H,data_L,tempadd[512];
 	data_H=(tempdata>>6)&63;     //Get High 8bit
 	data_L=tempdata&63;		    //Get Low 8bit
-//	data_H=(data_H)|0x80;	    //set high 2bit =10
-//	data_L=(data_L)|0x40;	    //set high 2bit =01
-    
 	tempadd[0]=DMX_Transposition(0xc3);
     tempadd[1]=DMX_Transposition(0xf5);
     tempadd[2]=DMX_Transposition(data_H+1);
@@ -185,62 +187,7 @@ void DMX_Send_ADD_Data(uint16_t tempdata)
     tempadd[6]=DMX_Transposition(0xf5);
     tempadd[7]=DMX_Transposition(0x5f);
     tempadd[8]=DMX_Transposition(0x00);
-    for(i = 0; i < 9; ++i)
-    {
-#ifdef UCS512C
-      DMX_W();
-#endif
-      DMX_Send_9Data(tempadd[i]);
-    }
-#ifdef UCS512C
-      DMX_W();
-#endif
-} 
-/* Write CMD For IC,tempadd is E6/C6 */
-void DMX_Write_CMD(uint16_t tempadd)
-{
-    uint8_t i;
-    DMX_Reset();        //Send 2S Reset sign
-    for(i = 0; i < DMX_model; ++i)
-    {
-         DMX_Send_CMD_Data(0x82,tempadd); 
-    }
-    DMX_Reset();
-    for(i = 0; i < DMX_model; ++i)
-    {
-         DMX_Send_CMD_Data(0xC2,tempadd); 
-    }
-}
-/* Send CMD Order*/
-void DMX_Send_CMD_Data(uint8_t common,uint8_t tempcmd)
-{
-//    tempcmd ：xxp0 0110
-//        1110 0110	P=1 E6  Keep the last frame
-//        1100 0110	P=0 C6  Power on state
-//    DEF_R: R Default value at Power on state
-    uint8_t i,tempadd[10];
-	tempadd[0]=DMX_Transposition(0xAA);
-    tempadd[1]=DMX_Transposition(0xF0);
-    tempadd[2]=DMX_Transposition(0x34);
-    tempadd[3]=DMX_Transposition(0x54); //ADD =55
-	tempadd[4]=DMX_Transposition(0xAC);
-    tempadd[5]=DMX_Transposition(common); //ADD=common
-    tempadd[6]=DMX_Transposition(tempcmd);
-    tempadd[7]=DEF_R;
-    tempadd[8]=DEF_G;
-    tempadd[9]=DEF_B;
-//    tempadd[10]=DEF_W;
-    
-    for(i = 0; i < 10; ++i)
-    {
-#ifdef UCS512C
-      DMX_W();
-#endif
-      DMX_Send_9Data(tempadd[i]);
-    }
-#ifdef UCS512C
-      DMX_W();
-#endif
+    return tempadd;
 } 
 /* Send Reset sign and 00Code */
 void DMX_Reset()
@@ -253,7 +200,7 @@ void DMX_Reset()
     DMX_Delay_us(150);           //UCS512 Mark after RESET MAB >50us
     GPIO_Tx_Config_AF();
     /* Send Start Code 00 */
-    DMX_Send_9Data(0x00);
+    DMX_Send_8Data(0x00);
 }
 /* UCS512C Datasheet */
 void DMX_W()
@@ -274,49 +221,4 @@ uint8_t DMX_Transposition(uint8_t tempchar)
 		tempnum=((tempchar<<i)&0x80)|tempnum; 
 	}
 	return tempnum;
-}
-/* Just for test */
-void DMX_Demo_Init()
-{  
-    //TM512 灯条 每个IC8*3通道 BRG
-    //UCS512 点光源 每个IC4通道 RGB_W W为白光LED
-    clrDmxData();       //Clear data
-    dmxData[0]=255;     //R      
-    dmxData[1]=0;       //G
-    dmxData[2]=0;       //B
-    
-    dmxData[3]=0;       //R
-    dmxData[4]=0;       //G
-    dmxData[5]=0;       //B
-
-    dmxData[6]=0;       //R
-    dmxData[7]=0;       //G
-    dmxData[8]=0;      //B
-    
-    dmxData[9]=0;      //R
-    dmxData[10]=0;      //G
-    dmxData[11]=0;      //B
-    
-    dmxData[12]=0;      //R
-    dmxData[13]=0;      //G
-    dmxData[14]=0;      //B
-    
-    dmxData[15]=0;      //R
-	dmxData[16]=0;      //G
-	dmxData[17]=0;      //B
-
-}
-void DMX_Demo()
-{  
-    uint16_t num=(DMX_model*DMX_Chn);
-    uint16_t m=1,i,t,j;
-    for (i = 0;i<m; i++)
-    {
-        t = dmxData[num-1];
-        for (j = num-1;j>0; j--)
-        {
-            dmxData[j] = dmxData[j-1];
-        }
-        dmxData[0] = t;
-    }
 }

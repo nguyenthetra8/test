@@ -2,8 +2,6 @@
 #define __DMX_H
 #include "main.h"
 
-#define UCS512C
-
 
 #define DMX_MODEL_NUM 3                          //IC num
 #define DMX_MODEL_CHN 40                         //channel IC per UCS512=4*10 TM512=3*8
@@ -31,21 +29,17 @@
 
 extern void DMX_Reset();
 extern uint8_t DMX_Transposition(uint8_t tempchar);
-extern void clrDmxData(void);
+extern void clrDmxData(uint8_t* dmxData);
 extern void GPIO_Tx_Config_OUT(void);
 extern void GPIO_Tx_Config_AF(void);
 extern void DMX_Delay_us(uint32_t nus);
 extern void DMX_Break();
-extern void DMX_Send_9Data(uint8_t tempdata);
+extern void DMX_Send_8Data(uint8_t tempdata);
 extern void DMX_Send_Packet(uint16_t tempnum, unsigned char* dmxData1);
 extern void DMX_Init();
-extern void DMX_Write_Add(uint16_t tempadd);
-extern void DMX_Send_ADD_Data(uint16_t tempdata);
+extern void DMX_Send_Add(unsigned char add);
+extern uint8_t* DMX_ADD_Data(uint16_t tempdata);
 
-extern void DMX_Demo_Init();
-extern void DMX_Demo();
-extern void DMX_Write_CMD(uint16_t tempadd);
-extern void DMX_Send_CMD_Data(uint8_t common,uint8_t tempcmd);
 extern void DMX_W();
 
 

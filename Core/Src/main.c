@@ -41,7 +41,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-static unsigned char dmxDataDemo[513] = {0};
+static unsigned char dmxDataDemo[513] = {255};
 
 /* USER CODE BEGIN PV */
 
@@ -92,15 +92,17 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  DMX_Init();
   /* USER CODE END 2 */
-
+//  clrDmxData(dmxDataDemo);
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-//  DMX_Demo_Init();
-  dmxDataDemo[0]= 255;
-  dmxDataDemo[1]= 0;
-  dmxDataDemo[2]= 255;
+//  int i;
+//  for(i=0;i<513;i++){
+//	  if(i%4 == 0){
+//		 dmxDataDemo[i] = ;
+//
+//	  }
+//  }
 
 //  DMX_Write_Add(1);
   while (1)
@@ -108,7 +110,7 @@ int main(void)
     /* USER CODE END WHILE */
 	  DMX_Send_Packet(512, dmxDataDemo);
 	  HAL_GPIO_TogglePin(LED1_Port, LED1_Pin);
-	  HAL_Delay(1000);
+	  HAL_Delay(500);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
